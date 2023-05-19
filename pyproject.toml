@@ -5,19 +5,20 @@ description="SAST Code Scanner in Python"
 authors = ["MatrixEditor"]
 keywords = ["pysast"]
 readme = "README.md"
+license = "GNU GPLv3"
 classifiers = [
      # How mature is this project? Common values are
       #   3 - Alpha
       #   4 - Beta
       #   5 - Production/Stable
-      'Development Status :: 3 - Beta',
+      'Development Status :: 3 - Alpha',
 
       'Intended Audience :: Developers',
       "Intended Audience :: Information Technology",
       'Operating System :: OS Independent',
 
       # Pick your license as you wish (should match "license" above)
-      'License :: OSI Approved :: GNU GPLv3',
+      'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
 
       'Programming Language :: Python :: 3.8',
       'Programming Language :: Python :: 3.9',
