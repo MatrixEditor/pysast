@@ -55,7 +55,8 @@ Options
 -S SAST_DIRS, --sast-dir SAST_DIRS
  Specifies one or more directories that store SAST rules. You can provide
  one or more directory paths separated by spaces. Use this option when your
- SAST rules are stored in directories instead of individual files.
+ SAST rules are stored in directories instead of individual files. The
+ current directory is used if no rules are specified.
 
 -rS, --recursive-sast-dir
  Load rules from target directories recursively. When using this option,
@@ -75,6 +76,10 @@ Options
  Skip files exceeding the specified maximum bytes. Use this option to set a
  threshold for the file size. Files larger than the specified maximum bytes
  will be skipped during the scan.
+-T, --disable-mime
+Specifies whether the scanner should use the 'file' utility to retrieve the
+MIME-type of a file. (enabled as per default)
+
 
 
 Usage Examples

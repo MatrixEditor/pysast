@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Writing SAST Rules &mdash; pysast 1.0.0-alpha documentation</title>
+  <title>Writing SAST Rules &mdash; pysast 1.0.1-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -197,22 +197,22 @@ process.</p>
 <section id="rule-format">
 <h2>Rule Format<a class="headerlink" href="#rule-format" title="Permalink to this heading"></a></h2>
 <p>Let’s take a quick look at the overall structure of a SAST rule:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;rule-id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;&lt;rule-id&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;default|lower|upper&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;engine&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;re&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pattern_text&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;pattern_text&gt;&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;and|or|not&quot;</span>
 <span class="w">    </span><span class="p">},</span>
 <span class="w">    </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rule_description&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rule_severity&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rule_title&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;rule_description&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;rule_severity&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;rule_title&gt;&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;filter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;file_ext&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;file_extension&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;mime_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mime_type&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;file_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;file_path&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;file_name&quot;</span>
+<span class="w">            </span><span class="nt">&quot;file_ext&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;file_extension&gt;&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;mime_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;mime_type&gt;&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;file_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;file_path&gt;&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;file_name&gt;&quot;</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
@@ -234,14 +234,28 @@ pattern. Valid values are <code class="docutils literal notranslate"><span class
 </dd>
 </dl>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pattern</span></code>: Contains information about the pattern to be matched.</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">pattern</span></code>:</dt><dd><p>Contains information about the pattern to be matched. Definition can be either
+a single string or an object storing the pattern string with extra options.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">patterns</span></code>:</dt><dd><p>A list of pattern definitions.</p>
+</dd>
+</dl>
+</li>
 <li><dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">engine</span></code>:</dt><dd><p>Specifies the pattern matching engine to be used. Currently, only regular
 expression (<code class="docutils literal notranslate"><span class="pre">re</span></code>) engine is supported.</p>
 </dd>
 </dl>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">text</span></code>: The actual pattern text to be matched using the specified engine.</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">text</span></code>:</dt><dd><p>The actual pattern text to be matched using the specified engine.</p>
+</dd>
+</dl>
+</li>
 <li><dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">mode</span></code>:</dt><dd><p>Specifies the matching mode for the pattern. Valid values are <code class="docutils literal notranslate"><span class="pre">and</span></code>, <code class="docutils literal notranslate"><span class="pre">or</span></code>,
 or <code class="docutils literal notranslate"><span class="pre">not</span></code>. Multiple patterns within a rule can be combined using these modes
@@ -249,7 +263,9 @@ using a <code class="docutils literal notranslate"><span class="pre">+</span></c
 </dd>
 </dl>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">meta</span></code>: Contains metadata information for the rule.</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">meta</span></code>:</dt><dd><p>Contains metadata information for the rule.</p>
+<ul>
 <li><dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">description</span></code>:</dt><dd><p>A description of the rule, providing details about its purpose or behavior.</p>
 </dd>
@@ -261,7 +277,11 @@ of violations detected by the rule.</p>
 </dd>
 </dl>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code>: The title or name of the rule.</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">title</span></code>:</dt><dd><p>The title or name of the rule.</p>
+</dd>
+</dl>
+</li>
 <li><dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">filter</span></code>:</dt><dd><p>Contains filter criteria to further narrow down the files or code elements to
 be analyzed by the rule.</p>
@@ -295,17 +315,69 @@ will be considered for analysis.</p>
 </dl>
 </li>
 </ul>
+</dd>
+</dl>
+</li>
+</ul>
 </section>
 </section>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h2>
 <p>To define a rule, just replace the placeholders in the rule format with actual values.
-The <code class="docutils literal notranslate"><span class="pre">rule-id</span></code> should be unique within the rule set. The “input” property can is set
-to “default” if no transformation is required on the input can can be left out. Specify
-the desired pattern, pattern engine, and matching mode in the “pattern” section, where
-the pattern engine and matching mode are optional. Provide a meaningful description,
-severity, and title in the <code class="docutils literal notranslate"><span class="pre">meta</span></code> section. Optionally, add filter criteria in the
-<code class="docutils literal notranslate"><span class="pre">filter</span></code> section to narrow down the analysis scope of the rule.</p>
+The <code class="docutils literal notranslate"><span class="pre">rule-id</span></code> should be unique within the rule set. The “input” property is set
+to “default” if no transformation is required on the input and can be left out.</p>
+<p>Specify the desired pattern, pattern engine, and matching mode in the “pattern” section,
+where the pattern engine and matching mode are optional. For instance, the next three code
+examples will return the same result:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">String definition (<code class="docutils literal notranslate"><span class="pre">re</span></code>-Engine used)</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;rule-id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ISSUE_[A_Z]+&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Full definition</span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rule-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;id&gt;</span><span class="w"> </span><span class="c1"># advanced</span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ISSUE_[A-Z]+</span>
+<span class="w">      </span><span class="nt">engine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_custom_module</span>
+<span class="w">      </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not</span><span class="w"> </span><span class="c1"># this pattern must NOT occur in a scanned file</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rule-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;id&gt;</span><span class="w"> </span><span class="c1"># simple</span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span>
+<span class="w">      </span><span class="c1"># &quot;and&quot; will be set as default mode and &quot;re&quot; as engine</span>
+<span class="w">      </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ISSUE_[A-Z]+</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">or definition within a list (use string or full definition)</span><a class="headerlink" href="#id3" title="Permalink to this code"></a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;&lt;rule-id&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;patterns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;ISSUE_[A-Z]+&quot;</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Provide a meaningful description, severity, and title in the <code class="docutils literal notranslate"><span class="pre">meta</span></code> section.
+Optionally, add filter criteria in the <code class="docutils literal notranslate"><span class="pre">filter</span></code> section to narrow down the
+analysis scope of the rule. The filter can be applied as follows:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rule-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-rule</span>
+<span class="w">  </span><span class="nt">meta</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">filters</span><span class="p">:</span>
+<span class="w">      </span><span class="c1"># mime-type != text/html or mime-type != text/json</span>
+<span class="w">      </span><span class="nt">mime_type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;!text/html,text/json&quot;</span>
+<span class="w">      </span><span class="c1"># re.match(r&quot;xml.*&quot;, extension)</span>
+<span class="w">      </span><span class="nt">file_ext</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">re:xml.*</span>
+<span class="w">      </span><span class="c1"># file_name == &quot;README&quot;</span>
+<span class="w">      </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">README</span>
+<span class="w">      </span><span class="c1"># not re.match(r&quot;.*/src.*&quot;, file_path)</span>
+<span class="w">      </span><span class="nt">file_path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;!re:.*/src.*&quot;</span>
+</pre></div>
+</div>
 </section>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h2>
@@ -324,6 +396,16 @@ severity, and title in the <code class="docutils literal notranslate"><span clas
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
+</pre></div>
+</div>
+<p>Or the same rule in YAML format (note that optional settings are left out):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rule-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-rule</span>
+<span class="w">  </span><span class="nt">input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lower</span>
+<span class="w">  </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">security_[A-Z]+_issue</span>
+<span class="w">  </span><span class="nt">meta</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Detects security-related issues with a specific naming convention.</span>
+<span class="w">    </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">high</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Security Naming Convention</span>
 </pre></div>
 </div>
 </section>

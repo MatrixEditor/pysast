@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; pysast 1.0.0-alpha documentation</title>
+  <title>API Reference &mdash; pysast 1.0.1-alpha documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -216,22 +216,29 @@ values.</p>
 <dd><p>Loads SAST (Static Application Security Testing) rules from a file.</p>
 <p>The method takes a file path as input and returns a list of <a class="reference internal" href="#pysast.SastRule" title="pysast.SastRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">SastRule</span></code></a>
 objects. The file can be in either JSON or YAML format.</p>
-<p>Example:
-&gt;&gt;&gt; rules = load_sast_rules(“sast_rules.json”)
-&gt;&gt;&gt; for rule in rules:
-…     print(rule.rule_id, rule.meta[“severity”])
-example-rule INFO</p>
+<section id="example">
+<h3>Example:<a class="headerlink" href="#example" title="Permalink to this heading"></a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rules</span> <span class="o">=</span> <span class="n">load_sast_rules</span><span class="p">(</span><span class="s2">&quot;sast_rules.json&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">rule</span><span class="o">.</span><span class="n">rule_id</span><span class="p">,</span> <span class="n">rule</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;severity&quot;</span><span class="p">])</span>
+<span class="go">example-rule INFO</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – The path to the file containing the SAST rules.</p>
+<dt class="field-odd">param file_path<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The path to the file containing the SAST rules.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of <a class="reference internal" href="#pysast.SastRule" title="pysast.SastRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">SastRule</span></code></a> objects representing the loaded rules.</p>
+<dt class="field-even">type file_path<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="#pysast.SastRule" title="pysast.SastRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">SastRule</span></code></a>]</p>
+<dt class="field-odd">return<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of <a class="reference internal" href="#pysast.SastRule" title="pysast.SastRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">SastRule</span></code></a> objects representing the loaded rules.</p>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<a class="reference internal" href="#pysast.SastRule" title="pysast.SastRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">SastRule</span></code></a>]</p>
 </dd>
 </dl>
+</section>
 </dd></dl>
 
 <dl class="py function">
@@ -295,7 +302,7 @@ combined to create complex filtering logic.</p>
 <span class="sig-name descname"><span class="pre">with_re</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pysast.FileFilter.with_re" title="Permalink to this definition"></a></dt>
 <dd><p>Enable regular expression matching.</p>
 <p>This method enables regular expression matching when applying the filter. After
-calling this method, the <span class="xref std std-ref">pysast.FileFilter.apply</span> method will use regular expressions
+calling this method, the <code class="docutils literal notranslate"><span class="pre">apply(...)</span></code> method will use regular expressions
 to match files against the filter criteria.</p>
 </dd></dl>
 
@@ -634,7 +641,7 @@ list is assigned as the default value.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pysast.SastScanner">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysast.</span></span><span class="sig-name descname"><span class="pre">SastScanner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rules_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pysast.SastRule" title="pysast.SastRule"><span class="pre">pysast.SastRule</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_prefilter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_postfilter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bytes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">104857600</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysast.SastScanner" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pysast.</span></span><span class="sig-name descname"><span class="pre">SastScanner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rules_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pysast.SastRule" title="pysast.SastRule"><span class="pre">pysast.SastRule</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_prefilter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_postfilter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bytes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">104857600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_mime_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysast.SastScanner" title="Permalink to this definition"></a></dt>
 <dd><p>A class representing a static application security scanner.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -651,6 +658,9 @@ of scan results. Default is True.</p></li>
 <li><p><strong>max_bytes</strong> (<em>int</em>) – Optional. Maximum number of bytes to read from a file during
 scanning. Default is <code class="docutils literal notranslate"><span class="pre">DEFAULT_MAX_BYTES</span></code>.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Patam use_mime_type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Specifies whether the MIME-type should be loaded</p>
 </dd>
 </dl>
 <dl class="py method">
