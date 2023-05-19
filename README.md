@@ -3,7 +3,7 @@
 [![python](https://img.shields.io/badge/python-3.8+-blue.svg?logo=python&labelColor=lightgrey)](https://www.python.org/downloads/)
 ![Status](https://img.shields.io:/static/v1?label=Status&message=Alpha-Release&color=lightgreen)
 ![Platform](https://img.shields.io:/static/v1?label=Platforms&message=All&color=yellowgreen)
-![PyPi](https://img.shields.io:/static/v1?label=PyPi&message=1.0.0-alpha&color=lightblue)
+![PyPi](https://img.shields.io:/static/v1?label=PyPi&message=1.0.1-alpha&color=lightblue)
 ![Codestyle](https://img.shields.io:/static/v1?label=Codestyle&message=black&color=black)
 
 Welcome to `pysast` - a powerful Python package designed for scanning one or multiple files using customizable rules written
@@ -36,8 +36,9 @@ By following these steps, you'll be equipped with the knowledge and tools to eff
 
 ## CLI Options
 
-    usage: pysast.py [-h] [-r] [-j] [-v] [-s SAST_RULES] [-S SAST_DIRS] [-rS] \
-                [--disable-prefilter] [--enable-postfilter] [-M MAX_BYTES] [PATHS ...]
+    usage: pysast.py [-h] [-r] [-j] [-v] [-s SAST_RULES] [-S SAST_DIRS] \
+                [-rS RECURSIVE_SAST_DIRS] [--disable-prefilter] [--enable-postfilter]
+                [-M MAX_BYTES] [-T] [PATHS ...]
 
     Scan the given file with SAST scanner using all available rules.
 
@@ -52,13 +53,14 @@ By following these steps, you'll be equipped with the knowledge and tools to eff
     -s SAST_RULES, --sast-rule SAST_RULES
                             File path(s) to SAST rules to import. (Use -S for directories)
     -S SAST_DIRS, --sast-dir SAST_DIRS
-                            One or more directories that store SAST rules. (Use -rS for recursive search)
-    -rS, --recursive-sast-dir
+                            One or more directories that store SAST rules. (Use -rS for recursive search) The current directory is used if no rules are specified.
+    -rS RECURSIVE_SAST_DIRS, --recursive-sast-dir RECURSIVE_SAST_DIRS
                             Load rules from target directories recursively
     --disable-prefilter   Disable prefiltering rules.
     --enable-postfilter   Enable postfiltering.
     -M MAX_BYTES, --max-bytes MAX_BYTES
                             Skip files exteeding a the amount of maximum bytes.
+    -T, --disable-mime        Specifies whether the scanner should use the 'file' utility to retrieve the MIME-type of a file. (enabled as per default)
 
 
 ## Documentation

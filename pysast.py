@@ -167,7 +167,7 @@ class FileFilter:
         """Enable regular expression matching.
 
         This method enables regular expression matching when applying the filter. After
-        calling this method, the :ref:`pysast.FileFilter.apply` method will use regular expressions
+        calling this method, the ``apply(...)`` method will use regular expressions
         to match files against the filter criteria.
         """
         self._use_re = True
@@ -674,6 +674,8 @@ class SastScanner(SupportsFilter):
     :param max_bytes: Optional. Maximum number of bytes to read from a file during
                       scanning. Default is ``DEFAULT_MAX_BYTES``.
     :type max_bytes: int
+    :patam use_mime_type: Specifies whether the MIME-type should be loaded
+    :type use_mime_type: bool
     """
 
     def __init__(
@@ -685,6 +687,7 @@ class SastScanner(SupportsFilter):
         disable_prefilter: bool = False,
         disable_postfilter: bool = True,
         max_bytes=DEFAULT_MAX_BYTES,
+        use_mime_type: bool = True
     ) -> None:
         super().__init__()
         self._scan_results = []
@@ -693,6 +696,7 @@ class SastScanner(SupportsFilter):
         self.max_bytes = max_bytes
         self.disable_prefilter = disable_prefilter
         self.disable_postfilter = disable_postfilter
+        self.use_mime_type = use_mime_type
 
         if rules_dir is not None:
             self.load_rule_directory(rules_dir, recursive_dir)
@@ -791,8 +795,10 @@ class SastScanner(SupportsFilter):
         :return: whether there are any scan results
         :rtype: bool
         """
-        mime_type = get_mime_type(file_path)
-        logger.debug(f"Got mime-type {mime_type} for {file_path}")
+        mime_type = None
+        if self.use_mime_type:
+            mime_type = get_mime_type(file_path)
+            logger.debug(f"Got mime-type {mime_type} for {file_path}")
 
         if os.path.getsize(file_path) > self.max_bytes:
             logger.warning("File too large - skipping '%s'", file_path)
@@ -847,6 +853,8 @@ def load_sast_rules(file_path: str) -> list[SastRule]:
     objects. The file can be in either JSON or YAML format.
 
     Example:
+    ~~~~~~~~
+
     >>> rules = load_sast_rules("sast_rules.json")
     >>> for rule in rules:
     ...     print(rule.rule_id, rule.meta["severity"])
@@ -934,15 +942,18 @@ def run(cmd: list[str] = None):
         default=[],
         action="append",
         dest="sast_dirs",
-        help="One or more directories that store SAST rules. (Use -rS for recursive search)",
+        help=(
+            "One or more directories that store SAST rules. (Use -rS for recursive search) "
+            "The current directory is used if no rules are specified."
+        ),
     )
     parser.add_argument(
         "-rS",
         "--recursive-sast-dir",
         required=False,
-        default=False,
-        action="store_true",
-        dest="recursive_sast_dir",
+        default=[],
+        action="append",
+        dest="recursive_sast_dirs",
         help="Load rules from target directories recursively",
     )
     parser.add_argument(
@@ -966,6 +977,16 @@ def run(cmd: list[str] = None):
         type=int,
         help="Skip files exteeding a the amount of maximum bytes.",
     )
+    parser.add_argument(
+        '-T', '--disable-mime',
+        required=False,
+        default=False,
+        action="store_true",
+        help=(
+            "Specifies whether the scanner should use the 'file' utility "
+            "to retrieve the MIME-type of a file. (enabled as per default)"
+        )
+    )
 
     args = parser.parse_args(cmd)
 
@@ -980,28 +1001,31 @@ def run(cmd: list[str] = None):
     logging.basicConfig(level=log_levels[log_level])
 
     if len(args.sast_rules) == 0 and len(args.sast_dirs) == 0:
-        logger.error("Please specify at least one rule file or rule directory!")
-        sys.exit(1)
+        logger.warning("No rules specified, using current directory...")
+        args.sast_dirs.append(os.path.abspath("."))
 
     scanner = SastScanner(
         max_bytes=args.max_bytes,
         disable_postfilter=not args.enable_postfilter,
         disable_prefilter=args.disable_prefilter,
+        use_mime_type=not args.use_mime
     )
 
     for file_path in args.sast_rules:
         scanner.load_rule_file(file_path)
 
     for dir_path in args.sast_dirs:
-        scanner.load_rule_directory(dir_path, args.recursive_sast_dir)
+        scanner.load_rule_directory(dir_path, False)
+
+    for dir_path in args.recursive_sast_dirs:
+        scanner.load_rule_directory(dir_path, True)
+
+    if len(scanner.rules) == 0:
+        logger.error("No rules loaded - make sure to specify the right file(s) or directory(ies)")
+        sys.exit(1)
 
     def pprint_match(match: dict, intent: str):
-        print(intent, "+ match:%s (%s)"
-            % (
-                match[RESULT_KEY_RULE_ID],
-                match[RESULT_KEY_META].get("severity", "None"),
-            )
-        )
+        print(intent, "+ match:%s (%s)" % (match[RESULT_KEY_RULE_ID], match[RESULT_KEY_META].get("severity", "None"))) # noqa
         print(intent * 3, "Title:", match[RESULT_KEY_META].get("title", "No Title"))
         print(intent * 3, "Description", match[RESULT_KEY_META].get("description", "<>"))
         print(intent * 3, "Lines:", pprint.pformat(match[RESULT_KEY_LINES], compact=True))
@@ -1013,7 +1037,10 @@ def run(cmd: list[str] = None):
             if scanner.scan(file_path):
                 if args.dump_json:
                     json.dump(
-                        scanner.scan_results, sys.stdout, sort_keys=True, indent=4
+                       obj= scanner.scan_results,
+                       fp=sys.stdout,
+                       sort_keys=True,
+                       indent=4
                     )
                 else:
                     print("+ file:", file_path)
@@ -1026,10 +1053,8 @@ def run(cmd: list[str] = None):
             return False
 
     def scan_dir(dir_path: str) -> bool:
-        for file_path in pathlib.Path(dir_path).iterdir():
-            if file_path.is_dir() and args.recursive:
-                scan_dir(str(file_path))
-            else:
+        for file_path in pathlib.Path(dir_path).glob("**/*" if args.recursive else "*"):
+            if file_path.is_file():
                 scan_file(str(file_path))
 
     for path in args.paths:

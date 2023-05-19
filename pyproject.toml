@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pysast"
-version = "1.0.0-alpha"
+version = "1.0.1-alpha"
 description="SAST Code Scanner in Python"
 authors = ["MatrixEditor"]
 keywords = ["pysast"]
