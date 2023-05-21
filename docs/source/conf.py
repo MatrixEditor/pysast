@@ -11,8 +11,8 @@ import os
 project = "pysast"
 copyright = "2023, MatrixEditor"
 author = "MatrixEditor"
-release = "1.1.0-alpha"
-version = "1.0"
+release = "1.1.1-alpha"
+version = "1.1"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
