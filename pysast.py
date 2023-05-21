@@ -16,7 +16,7 @@ from __future__ import annotations
 
 __doc__ = """Simple and small python module to perform SAST scans."""
 __version__ = "1.1"
-__sem_version__ = "1.1.1-alpha"
+__sem_version__ = "1.1.2-alpha"
 __authors__ = "MatrixEditor"
 
 import sys
@@ -30,7 +30,6 @@ import subprocess
 import datetime
 import importlib
 
-from multiprocessing import current_process
 from concurrent.futures import ThreadPoolExecutor
 from typing import Generator, Any
 
@@ -1136,7 +1135,7 @@ def run(cmd: list[str] = None):
                 "Scanning %d files...",
                 len(list(ppath.rglob("*") if args.recursive else ppath.iterdir())),
             )
-            if not current_process().daemon and args.threading:
+            if args.threading:
                 # The use threading will lower the amount of time spent for
                 # a scan.
                 with ThreadPoolExecutor() as executor:

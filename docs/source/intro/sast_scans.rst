@@ -184,10 +184,6 @@ from the command line. For example:
         pysast --threading -r path/to/directory
 
 
-.. important::
-    It is important to note that the ``--threading`` option is not suitable for daemon processes,
-    as it relies on concurrent execution and may introduce undesired interactions between threads.
-
 .. note::
     It's important to measure the impact of the optimization in your specific use case. While
     threading can significantly enhance performance for CPU-bound tasks, it may not always provide
