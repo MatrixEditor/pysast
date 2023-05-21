@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to pysast’s documentation! &mdash; pysast 1.0.2-alpha documentation</title>
+  <title>Welcome to pysast’s documentation! &mdash; pysast 1.1.0-alpha documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -63,14 +63,68 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="intro/sast_scans.html#usage-examples">Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro/sast_scans.html#program-optimization-with-threading">Program Optimization with Threading</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="intro/sast_scans.html#how-it-works">How It Works</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro/sast_scans.html#usage">Usage</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">SAST API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/index.html#interface">Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/index.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#interface">Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/index.html#pysast.is_rule_file"><code class="docutils literal notranslate"><span class="pre">is_rule_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/index.html#pysast.get_mime_type"><code class="docutils literal notranslate"><span class="pre">get_mime_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/index.html#pysast.extract_filter_keys"><code class="docutils literal notranslate"><span class="pre">extract_filter_keys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/index.html#pysast.load_sast_rules"><code class="docutils literal notranslate"><span class="pre">load_sast_rules()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/index.html#pysast.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#classes">Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/index.html#pysast.FileFilter"><code class="docutils literal notranslate"><span class="pre">FileFilter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.FileFilter.apply"><code class="docutils literal notranslate"><span class="pre">FileFilter.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.FileFilter.reset"><code class="docutils literal notranslate"><span class="pre">FileFilter.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.FileFilter.with_re"><code class="docutils literal notranslate"><span class="pre">FileFilter.with_re()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api/index.html#pysast.SupportsFilter"><code class="docutils literal notranslate"><span class="pre">SupportsFilter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SupportsFilter.apply_filters"><code class="docutils literal notranslate"><span class="pre">SupportsFilter.apply_filters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api/index.html#pysast.SastPattern"><code class="docutils literal notranslate"><span class="pre">SastPattern</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastPattern.compile"><code class="docutils literal notranslate"><span class="pre">SastPattern.compile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastPattern.engine"><code class="docutils literal notranslate"><span class="pre">SastPattern.engine</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastPattern.modes"><code class="docutils literal notranslate"><span class="pre">SastPattern.modes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastPattern.text"><code class="docutils literal notranslate"><span class="pre">SastPattern.text</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api/index.html#pysast.SastRule"><code class="docutils literal notranslate"><span class="pre">SastRule</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastRule.add_pattern"><code class="docutils literal notranslate"><span class="pre">SastRule.add_pattern()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastRule.meta"><code class="docutils literal notranslate"><span class="pre">SastRule.meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastRule.must_not_patterns"><code class="docutils literal notranslate"><span class="pre">SastRule.must_not_patterns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastRule.required_patterns"><code class="docutils literal notranslate"><span class="pre">SastRule.required_patterns</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api/index.html#pysast.SastContext"><code class="docutils literal notranslate"><span class="pre">SastContext</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastContext.match"><code class="docutils literal notranslate"><span class="pre">SastContext.match()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api/index.html#pysast.SastScanner"><code class="docutils literal notranslate"><span class="pre">SastScanner</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastScanner.filter_scan_results"><code class="docutils literal notranslate"><span class="pre">SastScanner.filter_scan_results()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastScanner.get_context"><code class="docutils literal notranslate"><span class="pre">SastScanner.get_context()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastScanner.has_matches"><code class="docutils literal notranslate"><span class="pre">SastScanner.has_matches</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastScanner.json"><code class="docutils literal notranslate"><span class="pre">SastScanner.json</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastScanner.load_rule_directory"><code class="docutils literal notranslate"><span class="pre">SastScanner.load_rule_directory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastScanner.load_rule_file"><code class="docutils literal notranslate"><span class="pre">SastScanner.load_rule_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastScanner.rules"><code class="docutils literal notranslate"><span class="pre">SastScanner.rules</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastScanner.scan"><code class="docutils literal notranslate"><span class="pre">SastScanner.scan()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/index.html#pysast.SastScanner.scan_results"><code class="docutils literal notranslate"><span class="pre">SastScanner.scan_results</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
