@@ -3,7 +3,7 @@
 [![python](https://img.shields.io/badge/python-3.8+-blue.svg?logo=python&labelColor=lightgrey)](https://www.python.org/downloads/)
 ![Status](https://img.shields.io:/static/v1?label=Status&message=Alpha-Release&color=lightgreen)
 ![Platform](https://img.shields.io:/static/v1?label=Platforms&message=All&color=yellowgreen)
-![PyPi](https://img.shields.io:/static/v1?label=PyPi&message=1.0.1-alpha&color=lightblue)
+![PyPi](https://img.shields.io:/static/v1?label=PyPi&message=1.0.2-alpha&color=lightblue)
 ![Codestyle](https://img.shields.io:/static/v1?label=Codestyle&message=black&color=black)
 
 Welcome to `pysast` - a powerful Python package designed for scanning one or multiple files using customizable rules written

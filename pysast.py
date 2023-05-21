@@ -15,7 +15,8 @@
 from __future__ import annotations
 
 __doc__ = """Simple and small python module to perform SAST scans."""
-__version__ = "0.0.1"
+__version__ = "1.0"
+__sem_version__ = "1.0.2-alpha"
 __authors__ = "MatrixEditor"
 
 import sys
@@ -28,6 +29,7 @@ import pathlib
 import subprocess
 import datetime
 import importlib
+import sarif_om
 
 from typing import Generator, Any
 
@@ -687,7 +689,7 @@ class SastScanner(SupportsFilter):
         disable_prefilter: bool = False,
         disable_postfilter: bool = True,
         max_bytes=DEFAULT_MAX_BYTES,
-        use_mime_type: bool = True
+        use_mime_type: bool = True,
     ) -> None:
         super().__init__()
         self._scan_results = []
@@ -978,14 +980,24 @@ def run(cmd: list[str] = None):
         help="Skip files exteeding a the amount of maximum bytes.",
     )
     parser.add_argument(
-        '-T', '--disable-mime',
+        "-T",
+        "--disable-mime",
         required=False,
         default=False,
         action="store_true",
         help=(
             "Specifies whether the scanner should use the 'file' utility "
             "to retrieve the MIME-type of a file. (enabled as per default)"
-        )
+        ),
+    )
+    parser.add_argument(
+        "-e",
+        "--exclude-file",
+        required=False,
+        default=[],
+        action="append",
+        dest="exclude_files",
+        help="Specifies exclusion files (use re: for regular expressions)",
     )
 
     args = parser.parse_args(cmd)
@@ -1004,11 +1016,17 @@ def run(cmd: list[str] = None):
         logger.warning("No rules specified, using current directory...")
         args.sast_dirs.append(os.path.abspath("."))
 
+    for i, val in enumerate(args.exclude_files):
+        if val.startswith("re:"):
+            args.exclude_files[i] = re.compile(val[3:])
+
     scanner = SastScanner(
         max_bytes=args.max_bytes,
         disable_postfilter=not args.enable_postfilter,
         disable_prefilter=args.disable_prefilter,
-        use_mime_type=not args.use_mime
+        use_mime_type=not args.use_mime,
+        exclude_files=args.exclude_files,
+        exclude_dirs=args.exclude_dirs,
     )
 
     for file_path in args.sast_rules:
@@ -1021,15 +1039,29 @@ def run(cmd: list[str] = None):
         scanner.load_rule_directory(dir_path, True)
 
     if len(scanner.rules) == 0:
-        logger.error("No rules loaded - make sure to specify the right file(s) or directory(ies)")
+        logger.error(
+            "No rules loaded - make sure to specify the right file(s) or directory(ies)"
+        )
         sys.exit(1)
 
+    excluded = args.excluded_files
+
+    def is_excluded(path: str) -> bool:
+        for val in excluded:
+            if isinstance(val, re.Pattern) and val.match(path) or val == path:
+                return True
+
     def pprint_match(match: dict, intent: str):
-        print(intent, "+ match:%s (%s)" % (match[RESULT_KEY_RULE_ID], match[RESULT_KEY_META].get("severity", "None"))) # noqa
+        print(intent, "+ match:%s (%s)"
+            % (
+                match[RESULT_KEY_RULE_ID],
+                match[RESULT_KEY_META].get("severity", "None"),
+            ),
+        )  # noqa
         print(intent * 3, "Title:", match[RESULT_KEY_META].get("title", "No Title"))
         print(intent * 3, "Description", match[RESULT_KEY_META].get("description", "<>"))
         print(intent * 3, "Lines:", pprint.pformat(match[RESULT_KEY_LINES], compact=True))
-        print(intent * 3,"Offsets:",pprint.pformat(match[RESULT_KEY_POSITIONS], compact=True))
+        print(intent * 3, "Offsets:", pprint.pformat(match[RESULT_KEY_POSITIONS], compact=True))
         print(intent * 3, "Meta:", pprint.pformat(match[RESULT_KEY_META]), "\n")
 
     def scan_file(file_path: str) -> bool:
@@ -1037,10 +1069,10 @@ def run(cmd: list[str] = None):
             if scanner.scan(file_path):
                 if args.dump_json:
                     json.dump(
-                       obj= scanner.scan_results,
-                       fp=sys.stdout,
-                       sort_keys=True,
-                       indent=4
+                        obj=scanner.scan_results,
+                        fp=sys.stdout,
+                        sort_keys=True,
+                        indent=4,
                     )
                 else:
                     print("+ file:", file_path)
@@ -1054,7 +1086,7 @@ def run(cmd: list[str] = None):
 
     def scan_dir(dir_path: str) -> bool:
         for file_path in pathlib.Path(dir_path).glob("**/*" if args.recursive else "*"):
-            if file_path.is_file():
+            if file_path.is_file() and not is_excluded(str(file_path)):
                 scan_file(str(file_path))
 
     for path in args.paths:
