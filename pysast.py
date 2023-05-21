@@ -16,7 +16,7 @@ from __future__ import annotations
 
 __doc__ = """Simple and small python module to perform SAST scans."""
 __version__ = "1.0"
-__sem_version__ = "1.0.2-alpha"
+__sem_version__ = "1.1.0-alpha"
 __authors__ = "MatrixEditor"
 
 import sys
@@ -29,8 +29,9 @@ import pathlib
 import subprocess
 import datetime
 import importlib
-import sarif_om
 
+from multiprocessing import current_process
+from concurrent.futures import ThreadPoolExecutor
 from typing import Generator, Any
 
 RESULT_KEY_META = "meta"
@@ -48,6 +49,7 @@ ALL_RESULT_KEYS = [
 ]
 
 DEFAULT_MAX_BYTES = 100 * 1024 * 1024  # 100 MB
+DEFAULT_MAX_MATCHES = 1000
 
 DEFAULT_PATTERN_ENGINE = "re"
 
@@ -425,12 +427,6 @@ class SastRule(SupportsFilter):
             for pattern in self.rule_content["patterns"]:
                 self.add_pattern(pattern)
 
-        # :private: used within a file scan
-        self._lines = []
-        self._positions = []
-        self._pattern_matches = []
-        self._matches = []
-
     def __str__(self) -> str:
         """Returns a string representation of a SastRule object.
 
@@ -453,13 +449,6 @@ class SastRule(SupportsFilter):
             self.patterns.append(SastPattern(text=pattern))
         else:
             self.patterns.append(SastPattern(**pattern))
-
-    def reset(self) -> None:
-        """Resets the internal state of the ``SastRule`` object."""
-        self._lines.clear()
-        self._positions.clear()
-        self._pattern_matches.clear()
-        self._matches.clear()
 
     @property
     def meta(self) -> dict[str, str | dict]:
@@ -490,6 +479,27 @@ class SastRule(SupportsFilter):
         """
         return list(filter(lambda x: "and" in x.modes, self.patterns))
 
+
+class SastRuleMatcher:
+    def __init__(self, rule: SastRule) -> None:
+        self._rule = rule
+        # :private: used within a file scan
+        self._lines = []
+        self._positions = []
+        self._pattern_matches = []
+        self._matches = []
+
+    def reset(self) -> None:
+        """Resets the internal state of the ``SastRule`` object."""
+        self._lines.clear()
+        self._positions.clear()
+        self._pattern_matches.clear()
+        self._matches.clear()
+
+    @property
+    def rule(self) -> SastRule:
+        return self._rule
+
     def create_result(self, file_path: str) -> dict:
         """Create a result dictionary for the rule.
 
@@ -515,10 +525,10 @@ class SastRule(SupportsFilter):
             return {}
 
         return {
-            RESULT_KEY_RULE_ID: self.rule_id,
+            RESULT_KEY_RULE_ID: self.rule.rule_id,
             RESULT_KEY_ABS_PATH: file_path,
             RESULT_KEY_LINES: self._lines,
-            RESULT_KEY_META: self.rule_content.get("meta", {}),
+            RESULT_KEY_META: self.rule.meta,
             RESULT_KEY_POSITIONS: self._positions,
             RESULT_KEY_MATCHES: self._matches,
         }
@@ -532,13 +542,13 @@ class SastRule(SupportsFilter):
         """
         #  If a "must not" pattern has a match, it means the rule does not
         # have a match, and False is returned. ("must not" with "or" are optional)
-        for pattern in self.must_not_patterns:
+        for pattern in self.rule.must_not_patterns:
             if pattern in self._pattern_matches:
                 return False
 
         # If any of the required patterns don't have a match, it also indicates
         # that the rule does not have a match, and False is returned.
-        for pattern in self.required_patterns:
+        for pattern in self.rule.required_patterns:
             if pattern not in self._pattern_matches:
                 return False
 
@@ -574,14 +584,14 @@ class SastRule(SupportsFilter):
         :param abs_offset: The absolute offset of the line.
         :type abs_offset: int
         """
-        transform = self.rule_content.get("input", "default")
+        transform = self.rule.rule_content.get("input", "default")
         if transform != "default" and hasattr(line, transform):
             line = getattr(line, transform)()
 
-        for pattern in self.patterns:
+        for pattern in self.rule.patterns:
             result = re.search(pattern.re_pattern, line)
 
-            if result:
+            if result and len(self._matches) < DEFAULT_MAX_MATCHES:
                 self._lines.append(line_index)
                 start, _ = result.span()
                 self._positions.append(abs_offset + (start or 1))
@@ -604,7 +614,7 @@ class SastContext:
     """
 
     def __init__(self, sast_rules: list[SastRule]) -> None:
-        self.sast_rules = sast_rules or []
+        self.sast_rules = list(map(lambda x: SastRuleMatcher(x), sast_rules or []))
 
     def _pool_lines(self, fp) -> Generator[tuple[bytes, int, int], Any, None]:
         """
@@ -781,11 +791,9 @@ class SastScanner(SupportsFilter):
             if file_path and not self.disable_prefilter:
                 if rule.apply_filters(rule.filters, file_path, mime_type):
                     filtered_sast_rules.append(rule)
-                    rule.reset()
             else:
                 # include all rules
                 filtered_sast_rules.append(rule)
-                rule.reset()
 
         return SastContext(filtered_sast_rules)
 
@@ -872,17 +880,24 @@ def load_sast_rules(file_path: str) -> list[SastRule]:
         return []
 
     result = []
-    if path_obj.name.endswith(".json"):
-        with open(str(file_path), "rb") as docfp:
-            document = json.load(docfp)
-            for rule_id in document:
-                result.append(SastRule(rule_id, document[rule_id]))
+    try:
+        if path_obj.name.endswith(".json"):
+            with open(str(file_path), "rb") as docfp:
+                document = json.load(docfp)
+                for rule_id in document:
+                    result.append(SastRule(rule_id, document[rule_id]))
 
-    elif path_obj.name.endswith((".yml", ".yaml")):
-        with open(str(file_path), "rb") as docfp:
-            document = yaml.load(docfp, yaml.SafeLoader)
-            result = [SastRule(x.pop("rule-id"), x) for x in document]
-
+        elif path_obj.name.endswith((".yml", ".yaml")):
+            with open(str(file_path), "rb") as docfp:
+                document = yaml.load(docfp, yaml.SafeLoader)
+                result = list(map(lambda x: SastRule(x.pop("rule-id"), x), document))
+    except Exception as err:
+        logger.error(
+            "(%s) Could not import rule from %s: %s",
+            type(err).__name__,
+            file_path,
+            str(err),
+        )
     return result
 
 
@@ -982,6 +997,8 @@ def run(cmd: list[str] = None):
     parser.add_argument(
         "-T",
         "--disable-mime",
+        "-T",
+        "--disable-mime",
         required=False,
         default=False,
         action="store_true",
@@ -998,6 +1015,13 @@ def run(cmd: list[str] = None):
         action="append",
         dest="exclude_files",
         help="Specifies exclusion files (use re: for regular expressions)",
+    )
+    parser.add_argument(
+        "--threading",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Activates threading for file processing. (Can't be used on daemon processes)",
     )
 
     args = parser.parse_args(cmd)
@@ -1024,9 +1048,7 @@ def run(cmd: list[str] = None):
         max_bytes=args.max_bytes,
         disable_postfilter=not args.enable_postfilter,
         disable_prefilter=args.disable_prefilter,
-        use_mime_type=not args.use_mime,
-        exclude_files=args.exclude_files,
-        exclude_dirs=args.exclude_dirs,
+        use_mime_type=not args.disable_mime,
     )
 
     for file_path in args.sast_rules:
@@ -1043,8 +1065,10 @@ def run(cmd: list[str] = None):
             "No rules loaded - make sure to specify the right file(s) or directory(ies)"
         )
         sys.exit(1)
+    else:
+        print("Using %d rules..." % len(scanner.rules))
 
-    excluded = args.excluded_files
+    excluded = args.exclude_files
 
     def is_excluded(path: str) -> bool:
         for val in excluded:
@@ -1052,17 +1076,30 @@ def run(cmd: list[str] = None):
                 return True
 
     def pprint_match(match: dict, intent: str):
-        print(intent, "+ match:%s (%s)"
+        print(
+            intent,
+            "+ match:%s (%s)"
             % (
                 match[RESULT_KEY_RULE_ID],
                 match[RESULT_KEY_META].get("severity", "None"),
             ),
         )  # noqa
         print(intent * 3, "Title:", match[RESULT_KEY_META].get("title", "No Title"))
-        print(intent * 3, "Description", match[RESULT_KEY_META].get("description", "<>"))
-        print(intent * 3, "Lines:", pprint.pformat(match[RESULT_KEY_LINES], compact=True))
-        print(intent * 3, "Offsets:", pprint.pformat(match[RESULT_KEY_POSITIONS], compact=True))
-        print(intent * 3, "Meta:", pprint.pformat(match[RESULT_KEY_META]), "\n")
+        print(
+            intent * 3, "Description", match[RESULT_KEY_META].get("description", "<>")
+        )
+        print(
+            intent * 3, "Lines:", pprint.pformat(match[RESULT_KEY_LINES], compact=True)
+        )
+        print(
+            intent * 3,
+            "Offsets:",
+            pprint.pformat(match[RESULT_KEY_POSITIONS], compact=True),
+        )
+        print(intent * 3, "Meta:")
+        for key, value in match.get('meta', {}).items():
+            print(intent * 6, f"{key}: {value}")
+        print()
 
     def scan_file(file_path: str) -> bool:
         try:
@@ -1084,14 +1121,30 @@ def run(cmd: list[str] = None):
             logger.exception("(%s) Scan failed for %s:", type(err).__name__, file_path)
             return False
 
-    def scan_dir(dir_path: str) -> bool:
-        for file_path in pathlib.Path(dir_path).glob("**/*" if args.recursive else "*"):
+    def scan_dir(dir_path: str, executor: ThreadPoolExecutor = None) -> bool:
+        root = pathlib.Path(dir_path)
+        for file_path in root.rglob("*") if args.recursive else root.iterdir():
             if file_path.is_file() and not is_excluded(str(file_path)):
-                scan_file(str(file_path))
+                if executor:
+                    executor.submit(scan_file, str(file_path))
+                else:
+                    scan_file(str(file_path))
 
     for path in args.paths:
         if os.path.isdir(path):
-            scan_dir(path)
+            ppath = pathlib.Path(path)
+            # print informational details
+            logger.debug(
+                "Scanning %d files...",
+                len(list(ppath.rglob("*") if args.recursive else ppath.iterdir())),
+            )
+            if not current_process().daemon and args.threading:
+                # The use threading will lower the amount of time spent for
+                # a scan.
+                with ThreadPoolExecutor() as executor:
+                    scan_dir(path, executor)
+            else:
+                scan_dir(path)
         else:
             if not scan_file(path):
                 sys.exit(1)

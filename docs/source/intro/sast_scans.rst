@@ -17,7 +17,7 @@ The general syntax for using pysast is as follows:
 
 .. code:: shell
 
-    pysast.py [-h] [-r] [-j] [-v] [-s SAST_RULES] [-S SAST_DIRS] [-rS] \
+    pysast [-h] [-r] [-j] [-v] [-s SAST_RULES] [-S SAST_DIRS] [-rS] \
         [--disable-prefilter] [--enable-postfilter] [-M MAX_BYTES] [PATHS ...]
 
 Let's explore the available options and their functionalities:
@@ -87,59 +87,107 @@ Usage Examples
 
 Let's look at some examples of using pysast with different options:
 
+.. note::
+    If no path or directory to rules is given, the current directory will be
+    scanned for rule definitions.
+
 - Scan a single file:
 
     .. code:: bash
 
-        pysast.py path/to/file.py
+        pysast path/to/file.py
 
 - Scan multiple files:
 
     .. code:: bash
 
-        pysast.py path/to/file1.py path/to/file2.py path/to/file3.py
+        pysast path/to/file1.py path/to/file2.py path/to/file3.py
 
 - Scan a directory recursively:
 
     .. code:: bash
 
-        pysast.py -r path/to/directory
+        pysast -r path/to/directory
 
 - Scan a directory with custom SAST rules:
 
     .. code:: bash
 
-        pysast.py -s path/to/rules.json path/to/directory
+        pysast -s path/to/rules.json path/to/directory
 
 - Scan a directory with SAST rules stored in a directory:
 
     .. code:: bash
 
-        pysast.py -S path/to/rules_directory path/to/directory
+        pysast -S path/to/rules_directory path/to/directory
 
 - Scan a directory with recursively loaded SAST rules:
 
     .. code:: bash
 
-        pysast.py -rS path/to/rules_directory path/to/directory
+        pysast -rS path/to/rules_directory path/to/directory
 
 - Scan with verbose output:
 
     .. code:: bash
 
-        pysast.py -v path/to/file.py
+        pysast -v path/to/file.py
 
 - Scan with JSON output:
 
     .. code:: bash
 
-        pysast.py -j path/to/file.py
+        pysast -j path/to/file.py
 
 - Scan with maximum file size limit:
 
     .. code:: bash
 
-        pysast.py -M 10000 path/to/file.py
+        pysast -M 10000 path/to/file.py
 
 These examples demonstrate some common usage scenarios of pysast. You can
 combine multiple options to tailor the scan according to your specific needs.
+
+Program Optimization with Threading
+-----------------------------------
+
+Since version ``1.1.0`` this program introduces an optimization feature that significantly
+improves its performance by leveraging threading. By utilizing the ``--threading`` option
+on the command line, you can enable this optimization to take full advantage of your
+system's resources.
+
+How It Works
+~~~~~~~~~~~~
+
+The optimization primarily targets the ``scan_dir()`` function, which scans a directory and
+its subdirectories for files. The original implementation sequentially scans each file,
+resulting in potential performance bottlenecks, especially for larger directories.
+
+With the optimization enabled, the program utilizes threading to parallelize the scanning
+process. By utilizing concurrent execution, multiple files can be scanned simultaneously,
+making efficient use of available CPU cores and drastically reducing the overall execution
+time.
+
+Usage
+~~~~~
+
+To enable the optimization, simply append the ``--threading`` option when executing the program
+from the command line. For example:
+
+- Scan a directory recursively with threading enabled:
+
+    .. code:: bash
+
+        pysast --threading -r path/to/directory
+
+
+.. important::
+    It is important to note that the ``--threading`` option is not suitable for daemon processes,
+    as it relies on concurrent execution and may introduce undesired interactions between threads.
+
+.. note::
+    It's important to measure the impact of the optimization in your specific use case. While
+    threading can significantly enhance performance for CPU-bound tasks, it may not always provide
+    improvements in scenarios where the program is I/O-bound or subject to certain limitations.
+    Therefore, we recommend benchmarking and profiling your program to evaluate the effectiveness
+    of the optimization in your particular environment.
