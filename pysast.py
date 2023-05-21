@@ -15,8 +15,8 @@
 from __future__ import annotations
 
 __doc__ = """Simple and small python module to perform SAST scans."""
-__version__ = "1.0"
-__sem_version__ = "1.1.0-alpha"
+__version__ = "1.1"
+__sem_version__ = "1.1.1-alpha"
 __authors__ = "MatrixEditor"
 
 import sys
@@ -1065,8 +1065,6 @@ def run(cmd: list[str] = None):
             "No rules loaded - make sure to specify the right file(s) or directory(ies)"
         )
         sys.exit(1)
-    else:
-        print("Using %d rules..." % len(scanner.rules))
 
     excluded = args.exclude_files
 
