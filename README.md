@@ -32,9 +32,9 @@ For more detailed information on using pysast, please refer to the [official doc
 
 Before you begin using `pysast`, it's recommended to familiarize yourself with the package's functionality and usage. The following steps will guide you through the essential setup and running your first code scan:
 
-1. Rule Definition: Learn how to define rules in JSON or YAML format to specify the analysis criteria for your codebase.
-2. Running Scans: Explore how to execute pysast to scan your files and generate detailed reports.
-3. Advanced Usage: Dive deeper into the advanced features and options offered by pysast to enhance your code analysis capabilities.
+1. [Rule Definition](https://matrixeditor.github.io/pysast/intro/sast_rules.html): Learn how to define rules in JSON or YAML format to specify the analysis criteria for your codebase.
+2. [Running Scans](https://matrixeditor.github.io/pysast/intro/sast_scans.html): Explore how to execute pysast to scan your files and generate detailed reports.
+3. [Advanced Usage](https://matrixeditor.github.io/pysast/api/index.html): Dive deeper into the advanced features and options offered by pysast to enhance your code analysis capabilities.
 
 By following these steps, you'll be equipped with the knowledge and tools to effectively utilize `pysast` in your projects.
 
@@ -47,9 +47,7 @@ system's resources.
 
 ## CLI Options
 
-    usage: pysast.py [-h] [-r] [-j] [-v] [-s SAST_RULES] [-S SAST_DIRS] \
-                [-rS RECURSIVE_SAST_DIRS] [--disable-prefilter] [--enable-postfilter]
-                [-M MAX_BYTES] [-T] [PATHS ...]
+    usage: pysast.py [-h] [-r] [-j] [-v] [-s SAST_RULES] [-S SAST_DIRS] [-rS RECURSIVE_SAST_DIRS] [--disable-prefilter] [--enable-postfilter] [-M MAX_BYTES] [-T] [-e EXCLUDE_FILES] [--threading] [PATHS ...]
 
     Scan the given file with SAST scanner using all available rules.
 
@@ -71,8 +69,11 @@ system's resources.
     --enable-postfilter   Enable postfiltering.
     -M MAX_BYTES, --max-bytes MAX_BYTES
                             Skip files exteeding a the amount of maximum bytes.
-    -T, --disable-mime        Specifies whether the scanner should use the 'file' utility to retrieve the MIME-type of a file. (enabled as per default)
-
+    -T, --disable-mime, -T, --disable-mime
+                            Specifies whether the scanner should use the 'file' utility to retrieve the MIME-type of a file. (enabled as per default)
+    -e EXCLUDE_FILES, --exclude-file EXCLUDE_FILES
+                            Specifies exclusion files (use re: for regular expressions)
+    --threading           Activates threading for file processing. (Can't be used on daemon processes)
 
 ## Contributing
 
