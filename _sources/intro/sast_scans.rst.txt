@@ -79,7 +79,10 @@ Options
 -T, --disable-mime
 Specifies whether the scanner should use the 'file' utility to retrieve the
 MIME-type of a file. (enabled as per default)
-
+-e EXCLUDE_FILES, --exclude-file EXCLUDE_FILES
+Specifies exclusion files (use re: for regular expressions)
+--threading
+Activates threading for file processing. (Can't be used on daemon processes)
 
 
 Usage Examples
