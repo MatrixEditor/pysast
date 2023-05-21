@@ -11,7 +11,7 @@ import os
 project = "pysast"
 copyright = "2023, MatrixEditor"
 author = "MatrixEditor"
-release = "1.0.2-alpha"
+release = "1.1.0-alpha"
 version = "1.0"
 
 # -- General configuration ---------------------------------------------------

@@ -3,7 +3,7 @@
 [![python](https://img.shields.io/badge/python-3.8+-blue.svg?logo=python&labelColor=lightgrey)](https://www.python.org/downloads/)
 ![Status](https://img.shields.io:/static/v1?label=Status&message=Alpha-Release&color=lightgreen)
 ![Platform](https://img.shields.io:/static/v1?label=Platforms&message=All&color=yellowgreen)
-![PyPi](https://img.shields.io:/static/v1?label=PyPi&message=1.0.2-alpha&color=lightblue)
+![PyPi](https://img.shields.io:/static/v1?label=PyPi&message=1.1.0-alpha&color=lightblue)
 ![Codestyle](https://img.shields.io:/static/v1?label=Codestyle&message=black&color=black)
 
 Welcome to `pysast` - a powerful Python package designed for scanning one or multiple files using customizable rules written
@@ -24,6 +24,10 @@ pip install pysast
 
 Once installed, you're ready to start using pysast for your code analysis needs.
 
+## Documentation
+
+For more detailed information on using pysast, please refer to the [official documentation](https://matrixeditor.github.io/pysast/) on Github.
+
 ## Getting Started
 
 Before you begin using `pysast`, it's recommended to familiarize yourself with the package's functionality and usage. The following steps will guide you through the essential setup and running your first code scan:
@@ -33,6 +37,13 @@ Before you begin using `pysast`, it's recommended to familiarize yourself with t
 3. Advanced Usage: Dive deeper into the advanced features and options offered by pysast to enhance your code analysis capabilities.
 
 By following these steps, you'll be equipped with the knowledge and tools to effectively utilize `pysast` in your projects.
+
+## Optimization
+
+Since version ``1.1.0`` this program introduces an optimization feature that significantly
+improves its performance by leveraging threading. By utilizing the ``--threading`` option
+on the command line, you can enable this optimization to take full advantage of your
+system's resources.
 
 ## CLI Options
 
@@ -62,10 +73,6 @@ By following these steps, you'll be equipped with the knowledge and tools to eff
                             Skip files exteeding a the amount of maximum bytes.
     -T, --disable-mime        Specifies whether the scanner should use the 'file' utility to retrieve the MIME-type of a file. (enabled as per default)
 
-
-## Documentation
-
-For more detailed information on using pysast, please refer to the [official documentation](https://matrixeditor.github.io/pysast/) on Github.
 
 ## Contributing
 
