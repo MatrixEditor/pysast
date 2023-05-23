@@ -195,7 +195,7 @@ class FileFilter:
             else:
                 matches = matches or item.lower() in target.lower()
 
-        return (self._inverted and matches) or (not self._inverted and not matches)
+        return (self._inverted and not matches) or (not self._inverted and matches)
 
 
 class SupportsFilter:
@@ -256,7 +256,9 @@ class SupportsFilter:
                 value = value[3:]
 
             if key.lower() == FILTER_FILE_EXT:
-                target = "" if "." not in file_path else file_path.split(".")[-1]
+                target = (
+                    "" if "." not in file_path else pathlib.Path(file_path).suffix[1:]
+                )
             elif key.lower() == FILTER_FILE_NAME:
                 target = os.path.basename(file_path)  # Extract file name
             elif key.lower() == FILTER_FULL_PATH:
@@ -385,6 +387,9 @@ class SastPattern:
         # Compilation errors should be visible to the user
         self.re_pattern = mod.compile(self.text.encode(errors="replace"))
 
+    def __repr__(self) -> str:
+        return "<SastPattern re='%s'>" % self.text
+
 
 class SastRule(SupportsFilter):
     """A class to describe a single SAST rule.
@@ -410,7 +415,7 @@ class SastRule(SupportsFilter):
         self.patterns = []
 
         # Filters are optional so we don't have to use them
-        if "filter" in self.rule_content.get("meta", {}):
+        if "filters" in self.rule_content.get("meta", {}):
             self.filters = extract_filter_keys(self.rule_content["meta"], is_meta=True)
 
         # Patterns can be declared as pure string with default filter mode "and"
@@ -551,6 +556,8 @@ class SastRuleMatcher:
             if pattern not in self._pattern_matches:
                 return False
 
+        # If no required patterns are defined and only optional patterns (or),
+        # at least one has to be detected:
         return len(self._pattern_matches) > 0
 
     def search(self, line: bytes, line_index: int, abs_offset: int):
@@ -588,7 +595,7 @@ class SastRuleMatcher:
             line = getattr(line, transform)()
 
         for pattern in self.rule.patterns:
-            result = re.search(pattern.re_pattern, line)
+            result = pattern.re_pattern.search(line)
 
             if result and len(self._matches) < DEFAULT_MAX_MATCHES:
                 self._lines.append(line_index)
@@ -660,6 +667,7 @@ class SastContext:
             if rule_result:
                 result.append(rule_result)
 
+        del self.sast_rules
         return result
 
 
@@ -765,7 +773,7 @@ class SastScanner(SupportsFilter):
         :return: True if there are scan results, False otherwise.
         :rtype: bool
         """
-        return len(self._scan_results) != 0
+        return len(self.scan_results) != 0
 
     @property
     def json(self) -> str:
@@ -1094,7 +1102,7 @@ def run(cmd: list[str] = None):
             pprint.pformat(match[RESULT_KEY_POSITIONS], compact=True),
         )
         print(intent * 3, "Meta:")
-        for key, value in match.get('meta', {}).items():
+        for key, value in match.get("meta", {}).items():
             print(intent * 6, f"{key}: {value}")
         print()
 
