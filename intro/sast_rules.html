@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writing SAST Rules &mdash; pysast 1.1.2-alpha documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ff954b99"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Performing a SAST Scan" href="sast_scans.html" />
+    <link rel="prev" title="Welcome to pysast’s documentation!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pysast
+          </a>
+              <div class="version">
+                1.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing SAST Rules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#benefits-of-writing-sast-rules">Benefits of Writing SAST Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rule-format">Rule Format</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#rule-properties">Rule Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sast_scans.html">Performing a SAST Scan</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sast_scans.html#command-syntax">Command syntax</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sast_scans.html#positional-arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sast_scans.html#options">Options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sast_scans.html#usage-examples">Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sast_scans.html#program-optimization-with-threading">Program Optimization with Threading</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sast_scans.html#how-it-works">How It Works</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sast_scans.html#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SAST API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/index.html#interface">Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.is_rule_file"><code class="docutils literal notranslate"><span class="pre">is_rule_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.get_mime_type"><code class="docutils literal notranslate"><span class="pre">get_mime_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.extract_filter_keys"><code class="docutils literal notranslate"><span class="pre">extract_filter_keys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.load_sast_rules"><code class="docutils literal notranslate"><span class="pre">load_sast_rules()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/index.html#classes">Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.FileFilter"><code class="docutils literal notranslate"><span class="pre">FileFilter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.FileFilter.apply"><code class="docutils literal notranslate"><span class="pre">FileFilter.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.FileFilter.reset"><code class="docutils literal notranslate"><span class="pre">FileFilter.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.FileFilter.with_re"><code class="docutils literal notranslate"><span class="pre">FileFilter.with_re()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.SupportsFilter"><code class="docutils literal notranslate"><span class="pre">SupportsFilter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SupportsFilter.apply_filters"><code class="docutils literal notranslate"><span class="pre">SupportsFilter.apply_filters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.SastPattern"><code class="docutils literal notranslate"><span class="pre">SastPattern</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastPattern.compile"><code class="docutils literal notranslate"><span class="pre">SastPattern.compile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastPattern.engine"><code class="docutils literal notranslate"><span class="pre">SastPattern.engine</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastPattern.modes"><code class="docutils literal notranslate"><span class="pre">SastPattern.modes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastPattern.text"><code class="docutils literal notranslate"><span class="pre">SastPattern.text</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.SastRule"><code class="docutils literal notranslate"><span class="pre">SastRule</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastRule.add_pattern"><code class="docutils literal notranslate"><span class="pre">SastRule.add_pattern()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastRule.meta"><code class="docutils literal notranslate"><span class="pre">SastRule.meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastRule.must_not_patterns"><code class="docutils literal notranslate"><span class="pre">SastRule.must_not_patterns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastRule.required_patterns"><code class="docutils literal notranslate"><span class="pre">SastRule.required_patterns</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.SastContext"><code class="docutils literal notranslate"><span class="pre">SastContext</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastContext.match"><code class="docutils literal notranslate"><span class="pre">SastContext.match()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.SastScanner"><code class="docutils literal notranslate"><span class="pre">SastScanner</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.filter_scan_results"><code class="docutils literal notranslate"><span class="pre">SastScanner.filter_scan_results()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.get_context"><code class="docutils literal notranslate"><span class="pre">SastScanner.get_context()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.has_matches"><code class="docutils literal notranslate"><span class="pre">SastScanner.has_matches</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.json"><code class="docutils literal notranslate"><span class="pre">SastScanner.json</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.load_rule_directory"><code class="docutils literal notranslate"><span class="pre">SastScanner.load_rule_directory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.load_rule_file"><code class="docutils literal notranslate"><span class="pre">SastScanner.load_rule_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.rules"><code class="docutils literal notranslate"><span class="pre">SastScanner.rules</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.scan"><code class="docutils literal notranslate"><span class="pre">SastScanner.scan()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.scan_results"><code class="docutils literal notranslate"><span class="pre">SastScanner.scan_results</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pysast</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Writing SAST Rules</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/intro/sast_rules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="writing-sast-rules">
+<span id="sast-rules"></span><h1>Writing SAST Rules<a class="headerlink" href="#writing-sast-rules" title="Link to this heading"></a></h1>
+<p>This guide aims to provide you with a comprehensive understanding of Static Application
+Security Testing (SAST) rules and how to effectively write them. SAST rules play a crucial
+role in identifying potential security vulnerabilities, coding flaws, and adherence to
+coding standards within your software applications.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It’s important to note that SAST rules alone cannot guarantee the absence of vulnerabilities
+in your code. They are an important part of a comprehensive security strategy, which should
+also include other testing methodologies, secure coding practices, and ongoing security
+assessments.</p>
+</div>
+<section id="benefits-of-writing-sast-rules">
+<h2>Benefits of Writing SAST Rules<a class="headerlink" href="#benefits-of-writing-sast-rules" title="Link to this heading"></a></h2>
+<p>Creating effective SAST rules offers several benefits throughout the software development
+lifecycle:</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>Early Detection of Vulnerabilities:</dt><dd><p>By implementing SAST rules, you can identify security vulnerabilities at an early stage,
+allowing developers to address them before deployment. This saves time, effort, and
+potential reputational damage.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Improved Code Quality:</dt><dd><p>SAST rules not only focus on security but also enforce coding best practices. Following
+these practices enhances code quality, maintainability, and reduces the likelihood of
+introducing new vulnerabilities.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Consistent Security Standards:</dt><dd><p>SAST rules enable you to enforce consistent security standards across your development
+team and projects. This ensures that all code undergoes a standardized security review
+process.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="rule-format">
+<h2>Rule Format<a class="headerlink" href="#rule-format" title="Link to this heading"></a></h2>
+<p>Let’s take a quick look at the overall structure of a SAST rule:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;&lt;rule-id&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;input&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;default|lower|upper&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;engine&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;re&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;pattern_text&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;and|or|not&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;rule_description&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;rule_severity&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;rule_title&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;filter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;file_ext&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;file_extension&gt;&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;mime_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;mime_type&gt;&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;file_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;file_path&gt;&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;file_name&gt;&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This is the format for defining a rule in the rule set. Rules are used for static
+application security testing (SAST) to detect specific patterns in code or files.
+Each rule is identified by a unique “rule-id” string.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>In addition to JSON, a rule can also be defined using YAML format.</p>
+</div>
+<section id="rule-properties">
+<h3>Rule Properties<a class="headerlink" href="#rule-properties" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">input</span></code>:</dt><dd><p>Specifies the transformation to be applied to the input before matching the
+pattern. Valid values are <code class="docutils literal notranslate"><span class="pre">default</span></code>, <code class="docutils literal notranslate"><span class="pre">lower</span></code>, or <code class="docutils literal notranslate"><span class="pre">upper</span></code>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">pattern</span></code>:</dt><dd><p>Contains information about the pattern to be matched. Definition can be either
+a single string or an object storing the pattern string with extra options.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">patterns</span></code>:</dt><dd><p>A list of pattern definitions.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">engine</span></code>:</dt><dd><p>Specifies the pattern matching engine to be used. Currently, only regular
+expression (<code class="docutils literal notranslate"><span class="pre">re</span></code>) engine is supported.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">text</span></code>:</dt><dd><p>The actual pattern text to be matched using the specified engine.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">mode</span></code>:</dt><dd><p>Specifies the matching mode for the pattern. Valid values are <code class="docutils literal notranslate"><span class="pre">and</span></code>, <code class="docutils literal notranslate"><span class="pre">or</span></code>,
+or <code class="docutils literal notranslate"><span class="pre">not</span></code>. Multiple patterns within a rule can be combined using these modes
+using a <code class="docutils literal notranslate"><span class="pre">+</span></code>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">meta</span></code>:</dt><dd><p>Contains metadata information for the rule.</p>
+<ul>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">description</span></code>:</dt><dd><p>A description of the rule, providing details about its purpose or behavior.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">severity</span></code>:</dt><dd><p>Specifies the severity level of the rule, indicating the importance or impact
+of violations detected by the rule.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">title</span></code>:</dt><dd><p>The title or name of the rule.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">filter</span></code>:</dt><dd><p>Contains filter criteria to further narrow down the files or code elements to
+be analyzed by the rule.</p>
+<ul>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">file_ext</span></code>:</dt><dd><p>Specifies the file extension filter. Only files with the specified extension
+will be considered for analysis.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">mime_type</span></code>:</dt><dd><p>Specifies the MIME type filter. Only files with the specified MIME type will
+be considered for analysis.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">file_path</span></code>:</dt><dd><p>Specifies the file path filter. Only files matching the specified path pattern
+will be considered for analysis.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">file_name</span></code>:</dt><dd><p>Specifies the file name filter. Only files with the specified name pattern
+will be considered for analysis.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h2>
+<p>To define a rule, just replace the placeholders in the rule format with actual values.
+The <code class="docutils literal notranslate"><span class="pre">rule-id</span></code> should be unique within the rule set. The “input” property is set
+to “default” if no transformation is required on the input and can be left out.</p>
+<p>Specify the desired pattern, pattern engine, and matching mode in the “pattern” section,
+where the pattern engine and matching mode are optional. For instance, the next three code
+examples will return the same result:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">String definition (<code class="docutils literal notranslate"><span class="pre">re</span></code>-Engine used)</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;rule-id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ISSUE_[A_Z]+&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Full definition</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rule-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;id&gt;</span><span class="w"> </span><span class="c1"># advanced</span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ISSUE_[A-Z]+</span>
+<span class="w">      </span><span class="nt">engine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_custom_module</span>
+<span class="w">      </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not</span><span class="w"> </span><span class="c1"># this pattern must NOT occur in a scanned file</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rule-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;id&gt;</span><span class="w"> </span><span class="c1"># simple</span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span>
+<span class="w">      </span><span class="c1"># &quot;and&quot; will be set as default mode and &quot;re&quot; as engine</span>
+<span class="w">      </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ISSUE_[A-Z]+</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">or definition within a list (use string or full definition)</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;&lt;rule-id&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;patterns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;ISSUE_[A-Z]+&quot;</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Provide a meaningful description, severity, and title in the <code class="docutils literal notranslate"><span class="pre">meta</span></code> section.
+Optionally, add filter criteria in the <code class="docutils literal notranslate"><span class="pre">filter</span></code> section to narrow down the
+analysis scope of the rule. The filter can be applied as follows:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rule-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-rule</span>
+<span class="w">  </span><span class="nt">meta</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">filters</span><span class="p">:</span>
+<span class="w">      </span><span class="c1"># mime-type != text/html or mime-type != text/json</span>
+<span class="w">      </span><span class="nt">mime_type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;!text/html,text/json&quot;</span>
+<span class="w">      </span><span class="c1"># re.match(r&quot;xml.*&quot;, extension)</span>
+<span class="w">      </span><span class="nt">file_ext</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">re:xml.*</span>
+<span class="w">      </span><span class="c1"># file_name == &quot;README&quot;</span>
+<span class="w">      </span><span class="nt">file_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">README</span>
+<span class="w">      </span><span class="c1"># not re.match(r&quot;.*/src.*&quot;, file_path)</span>
+<span class="w">      </span><span class="nt">file_path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;!re:.*/src.*&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;example-rule&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lower&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;engine&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;re&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;security_[A-Z]+_issue&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;and&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Detects security-related issues with a specific naming convention.&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;high&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Security Naming Convention&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Or the same rule in YAML format (note that optional settings are left out):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rule-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-rule</span>
+<span class="w">  </span><span class="nt">input</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lower</span>
+<span class="w">  </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">security_[A-Z]+_issue</span>
+<span class="w">  </span><span class="nt">meta</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Detects security-related issues with a specific naming convention.</span>
+<span class="w">    </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">high</span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Security Naming Convention</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to pysast’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sast_scans.html" class="btn btn-neutral float-right" title="Performing a SAST Scan" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, MatrixEditor.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

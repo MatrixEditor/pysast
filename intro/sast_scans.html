@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Performing a SAST Scan &mdash; pysast 1.1.2-alpha documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ff954b99"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="../api/index.html" />
+    <link rel="prev" title="Writing SAST Rules" href="sast_rules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pysast
+          </a>
+              <div class="version">
+                1.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="sast_rules.html">Writing SAST Rules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sast_rules.html#benefits-of-writing-sast-rules">Benefits of Writing SAST Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sast_rules.html#rule-format">Rule Format</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sast_rules.html#rule-properties">Rule Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sast_rules.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sast_rules.html#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Performing a SAST Scan</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#command-syntax">Command syntax</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#positional-arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#options">Options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#usage-examples">Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#program-optimization-with-threading">Program Optimization with Threading</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-it-works">How It Works</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SAST API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/index.html#interface">Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.is_rule_file"><code class="docutils literal notranslate"><span class="pre">is_rule_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.get_mime_type"><code class="docutils literal notranslate"><span class="pre">get_mime_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.extract_filter_keys"><code class="docutils literal notranslate"><span class="pre">extract_filter_keys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.load_sast_rules"><code class="docutils literal notranslate"><span class="pre">load_sast_rules()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/index.html#classes">Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.FileFilter"><code class="docutils literal notranslate"><span class="pre">FileFilter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.FileFilter.apply"><code class="docutils literal notranslate"><span class="pre">FileFilter.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.FileFilter.reset"><code class="docutils literal notranslate"><span class="pre">FileFilter.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.FileFilter.with_re"><code class="docutils literal notranslate"><span class="pre">FileFilter.with_re()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.SupportsFilter"><code class="docutils literal notranslate"><span class="pre">SupportsFilter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SupportsFilter.apply_filters"><code class="docutils literal notranslate"><span class="pre">SupportsFilter.apply_filters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.SastPattern"><code class="docutils literal notranslate"><span class="pre">SastPattern</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastPattern.compile"><code class="docutils literal notranslate"><span class="pre">SastPattern.compile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastPattern.engine"><code class="docutils literal notranslate"><span class="pre">SastPattern.engine</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastPattern.modes"><code class="docutils literal notranslate"><span class="pre">SastPattern.modes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastPattern.text"><code class="docutils literal notranslate"><span class="pre">SastPattern.text</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.SastRule"><code class="docutils literal notranslate"><span class="pre">SastRule</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastRule.add_pattern"><code class="docutils literal notranslate"><span class="pre">SastRule.add_pattern()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastRule.meta"><code class="docutils literal notranslate"><span class="pre">SastRule.meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastRule.must_not_patterns"><code class="docutils literal notranslate"><span class="pre">SastRule.must_not_patterns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastRule.required_patterns"><code class="docutils literal notranslate"><span class="pre">SastRule.required_patterns</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.SastContext"><code class="docutils literal notranslate"><span class="pre">SastContext</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastContext.match"><code class="docutils literal notranslate"><span class="pre">SastContext.match()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/index.html#pysast.SastScanner"><code class="docutils literal notranslate"><span class="pre">SastScanner</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.filter_scan_results"><code class="docutils literal notranslate"><span class="pre">SastScanner.filter_scan_results()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.get_context"><code class="docutils literal notranslate"><span class="pre">SastScanner.get_context()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.has_matches"><code class="docutils literal notranslate"><span class="pre">SastScanner.has_matches</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.json"><code class="docutils literal notranslate"><span class="pre">SastScanner.json</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.load_rule_directory"><code class="docutils literal notranslate"><span class="pre">SastScanner.load_rule_directory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.load_rule_file"><code class="docutils literal notranslate"><span class="pre">SastScanner.load_rule_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.rules"><code class="docutils literal notranslate"><span class="pre">SastScanner.rules</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.scan"><code class="docutils literal notranslate"><span class="pre">SastScanner.scan()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/index.html#pysast.SastScanner.scan_results"><code class="docutils literal notranslate"><span class="pre">SastScanner.scan_results</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pysast</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Performing a SAST Scan</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/intro/sast_scans.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="performing-a-sast-scan">
+<span id="sast-scans"></span><h1>Performing a SAST Scan<a class="headerlink" href="#performing-a-sast-scan" title="Link to this heading"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">pysast</span></code> module can also be used as a command line utility. It provides a convenient
+way to perform Static Application Security Testing (SAST) scans on one or more files or
+directories. This comprehensive guide will walk you through the various options and
+functionalities of <code class="docutils literal notranslate"><span class="pre">pysast</span></code>, enabling you to leverage its power for effective code
+analysis and vulnerability detection.</p>
+<section id="command-syntax">
+<h2>Command syntax<a class="headerlink" href="#command-syntax" title="Link to this heading"></a></h2>
+<p>The general syntax for using pysast is as follows:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pysast<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span><span class="o">[</span>-r<span class="o">]</span><span class="w"> </span><span class="o">[</span>-j<span class="o">]</span><span class="w"> </span><span class="o">[</span>-v<span class="o">]</span><span class="w"> </span><span class="o">[</span>-s<span class="w"> </span>SAST_RULES<span class="o">]</span><span class="w"> </span><span class="o">[</span>-S<span class="w"> </span>SAST_DIRS<span class="o">]</span><span class="w"> </span><span class="o">[</span>-rS<span class="o">]</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="o">[</span>--disable-prefilter<span class="o">]</span><span class="w"> </span><span class="o">[</span>--enable-postfilter<span class="o">]</span><span class="w"> </span><span class="o">[</span>-M<span class="w"> </span>MAX_BYTES<span class="o">]</span><span class="w"> </span><span class="o">[</span>PATHS<span class="w"> </span>...<span class="o">]</span>
+</pre></div>
+</div>
+<p>Let’s explore the available options and their functionalities:</p>
+<section id="positional-arguments">
+<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">PATHS</span></code>:</dt><dd><p>One or more files or directories to scan. Specify the path(s) to the file(s) or
+directory(ies) you want <code class="docutils literal notranslate"><span class="pre">pysast</span></code> to analyze.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="options">
+<h3>Options<a class="headerlink" href="#options" title="Link to this heading"></a></h3>
+<dl class="option-list">
+<dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
+<dd><p>Displays the help message and exits.</p>
+</dd>
+<dt><kbd><span class="option">-r</span>, <span class="option">--recursive</span></kbd></dt>
+<dd><p>Scan target directories recursively. This option enables pysast to scan
+files within the specified directories and their subdirectories.</p>
+</dd>
+<dt><kbd><span class="option">-j</span>, <span class="option">--json</span></kbd></dt>
+<dd><p>Dump JSON output instead of using pprint. Use this option if you prefer
+the scan results in JSON format.</p>
+</dd>
+<dt><kbd><span class="option">-v</span>, <span class="option">--verbose</span></kbd></dt>
+<dd><p>Specifies the verbosity for the next scan. You can use -v for verbose
+output and -vvv for more detailed and verbose output.</p>
+</dd>
+<dt><kbd><span class="option">-s <var>SAST_RULES</var></span>, <span class="option">--sast-rule <var>SAST_RULES</var></span></kbd></dt>
+<dd><p>Specifies the file path(s) to the SAST rules you want to import. You can
+provide one or more file paths separated by spaces. This option allows you
+to use custom SAST rules for the scan.</p>
+</dd>
+<dt><kbd><span class="option">-S <var>SAST_DIRS</var></span>, <span class="option">--sast-dir <var>SAST_DIRS</var></span></kbd></dt>
+<dd><p>Specifies one or more directories that store SAST rules. You can provide
+one or more directory paths separated by spaces. Use this option when your
+SAST rules are stored in directories instead of individual files. The
+current directory is used if no rules are specified.</p>
+</dd>
+<dt><kbd><span class="option">-r<var>S</var></span>, <span class="option">--recursive-sast-dir</span></kbd></dt>
+<dd><p>Load rules from target directories recursively. When using this option,
+<code class="docutils literal notranslate"><span class="pre">pysast</span></code> will search for SAST rules in the specified directories and
+their subdirectories.</p>
+</dd>
+<dt><kbd><span class="option">--disable-prefilter</span></kbd></dt>
+<dd><p>Disable prefiltering rules. By default, pysast applies a prefiltering
+step to improve the performance of the scan. Use this option if you want
+to disable the prefiltering step.</p>
+</dd>
+<dt><kbd><span class="option">--enable-postfilter</span></kbd></dt>
+<dd><p>Enable postfiltering. This option allows pysast to apply additional filtering
+on the scan results, further refining the output.</p>
+</dd>
+<dt><kbd><span class="option">-M <var>MAX_BYTES</var></span>, <span class="option">--max-bytes <var>MAX_BYTES</var></span></kbd></dt>
+<dd><p>Skip files exceeding the specified maximum bytes. Use this option to set a
+threshold for the file size. Files larger than the specified maximum bytes
+will be skipped during the scan.</p>
+</dd>
+</dl>
+<p>-T, –disable-mime
+Specifies whether the scanner should use the ‘file’ utility to retrieve the
+MIME-type of a file. (enabled as per default)
+-e EXCLUDE_FILES, –exclude-file EXCLUDE_FILES
+Specifies exclusion files (use re: for regular expressions)
+–threading
+Activates threading for file processing. (Can’t be used on daemon processes)</p>
+</section>
+</section>
+<section id="usage-examples">
+<h2>Usage Examples<a class="headerlink" href="#usage-examples" title="Link to this heading"></a></h2>
+<p>Let’s look at some examples of using pysast with different options:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If no path or directory to rules is given, the current directory will be
+scanned for rule definitions.</p>
+</div>
+<ul>
+<li><p>Scan a single file:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pysast<span class="w"> </span>path/to/file.py
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Scan multiple files:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pysast<span class="w"> </span>path/to/file1.py<span class="w"> </span>path/to/file2.py<span class="w"> </span>path/to/file3.py
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Scan a directory recursively:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pysast<span class="w"> </span>-r<span class="w"> </span>path/to/directory
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Scan a directory with custom SAST rules:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pysast<span class="w"> </span>-s<span class="w"> </span>path/to/rules.json<span class="w"> </span>path/to/directory
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Scan a directory with SAST rules stored in a directory:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pysast<span class="w"> </span>-S<span class="w"> </span>path/to/rules_directory<span class="w"> </span>path/to/directory
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Scan a directory with recursively loaded SAST rules:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pysast<span class="w"> </span>-rS<span class="w"> </span>path/to/rules_directory<span class="w"> </span>path/to/directory
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Scan with verbose output:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pysast<span class="w"> </span>-v<span class="w"> </span>path/to/file.py
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Scan with JSON output:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pysast<span class="w"> </span>-j<span class="w"> </span>path/to/file.py
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Scan with maximum file size limit:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pysast<span class="w"> </span>-M<span class="w"> </span><span class="m">10000</span><span class="w"> </span>path/to/file.py
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<p>These examples demonstrate some common usage scenarios of pysast. You can
+combine multiple options to tailor the scan according to your specific needs.</p>
+</section>
+<section id="program-optimization-with-threading">
+<h2>Program Optimization with Threading<a class="headerlink" href="#program-optimization-with-threading" title="Link to this heading"></a></h2>
+<p>Since version <code class="docutils literal notranslate"><span class="pre">1.1.0</span></code> this program introduces an optimization feature that significantly
+improves its performance by leveraging threading. By utilizing the <code class="docutils literal notranslate"><span class="pre">--threading</span></code> option
+on the command line, you can enable this optimization to take full advantage of your
+system’s resources.</p>
+<section id="how-it-works">
+<h3>How It Works<a class="headerlink" href="#how-it-works" title="Link to this heading"></a></h3>
+<p>The optimization primarily targets the <code class="docutils literal notranslate"><span class="pre">scan_dir()</span></code> function, which scans a directory and
+its subdirectories for files. The original implementation sequentially scans each file,
+resulting in potential performance bottlenecks, especially for larger directories.</p>
+<p>With the optimization enabled, the program utilizes threading to parallelize the scanning
+process. By utilizing concurrent execution, multiple files can be scanned simultaneously,
+making efficient use of available CPU cores and drastically reducing the overall execution
+time.</p>
+</section>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
+<p>To enable the optimization, simply append the <code class="docutils literal notranslate"><span class="pre">--threading</span></code> option when executing the program
+from the command line. For example:</p>
+<ul>
+<li><p>Scan a directory recursively with threading enabled:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pysast<span class="w"> </span>--threading<span class="w"> </span>-r<span class="w"> </span>path/to/directory
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It’s important to measure the impact of the optimization in your specific use case. While
+threading can significantly enhance performance for CPU-bound tasks, it may not always provide
+improvements in scenarios where the program is I/O-bound or subject to certain limitations.
+Therefore, we recommend benchmarking and profiling your program to evaluate the effectiveness
+of the optimization in your particular environment.</p>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="sast_rules.html" class="btn btn-neutral float-left" title="Writing SAST Rules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, MatrixEditor.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
